@@ -1,7 +1,7 @@
 'use client'
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { useRouter } from "next/navigation";
-import NavbarComp from '../components/NavbarComp';
+
 export default  function Home() {
  
   const router=useRouter();
@@ -11,7 +11,15 @@ export default  function Home() {
   }
   return (
     <div className='bg-base-500'>
-      <NavbarComp/>
+      <div className="navbar bg-base-300">
+    <div className="flex-1">
+      <a className="btn btn-ghost text-xl">CodePlayGround</a>
+      
+    </div>
+    <div className="flex-none">
+     <a className='btn btn-primary' href='/api/auth/login'>Login/Signup</a>
+    </div>
+  </div>
       <div className="hero min-h-screen bg-base-200">
         <div className="hero-content flex-col lg:flex-row">
           <img src="https://th.bing.com/th/id/OIG3.lG5l3d0awnok0rpKZL8Y?pid=ImgGn" className="max-w-sm rounded-lg shadow-2xl lg:max-w-none lg:w-1/2" alt="Compiler Image" />
