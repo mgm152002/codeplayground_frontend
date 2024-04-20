@@ -22,7 +22,7 @@ export default function ProfileClient() {
   const handleCompile = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.post('http://3.110.50.141:8000/compile', {
+      const { data } = await axios.post('https://3.110.50.141:8000/compile', {
         code: code,
         lang: lang
       }, {
