@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { useRouter } from 'next/navigation';
 import AceEditor from 'react-ace';
+const https = require('https'); 
 
 // Import the required ACE editor mode and theme
 import 'ace-builds/src-noconflict/mode-c_cpp';
@@ -22,13 +23,14 @@ export default function ProfileClient() {
   const handleCompile = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.post('http://3.110.50.141:443/compile', {
+      const { data } = await axios.post('http://13.232.1.3:8000/compile', {
         code: code,
         lang: lang
       }, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
-        }
+        },
+        httpsAgent: new https.Agent({ rejectUnauthorized: false })
       });
       setResult(data.out); // Assuming the compilation result is in the 'out' field of the response
     } catch (error) {
