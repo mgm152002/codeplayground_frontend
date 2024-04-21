@@ -23,14 +23,14 @@ export default function ProfileClient() {
   const handleCompile = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.post('http://13.232.1.3:8000/compile', {
+      const { data } = await axios.post('https://13.232.1.3/compile', {
         code: code,
         lang: lang
       }, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
-        httpsAgent: new https.Agent({ rejectUnauthorized: false })
+        
       });
       setResult(data.out); // Assuming the compilation result is in the 'out' field of the response
     } catch (error) {
