@@ -26,13 +26,13 @@ export default function Home() {
   return (
     <div className='bg-base-500'>
       {showWarning && (
-        <div className="fixed top-0 left-0 z-50 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-8 rounded-lg">
-            <h2 className="text-xl font-bold mb-4">Warning!</h2>
-            <p className="mb-4">You are viewing this page on a mobile device. For the best experience, please use a desktop or laptop computer.</p>
-            <button className="btn btn-primary" onClick={handleCloseWarning} disabled>OK</button>
-          </div>
+        <div className="card w-96 bg-primary shadow-xl">
+        <div className="card-body text-black">
+          <h2 className="card-title">Warning!</h2>
+          <p>This website is not supported on mobile devices!</p>
+         
         </div>
+      </div>
       )}
       <div className="navbar bg-base-300">
         <div className="flex-1">
