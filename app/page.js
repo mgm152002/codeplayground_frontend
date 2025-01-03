@@ -83,7 +83,7 @@ export default function Home() {
       <p className="py-6">
       Your go-to platform to write, run, and compile code across multiple programming languages with ease. Experiment, test, and bring your ideas to life in a seamless and intuitive environment!”
       </p>
-      <button className="btn btn-primary">Get Started</button>
+      <button className="btn btn-primary" onClick={router.push('/api/auth/login')}>Get Started</button>
     </div>
   </div>
   
