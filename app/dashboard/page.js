@@ -1,4 +1,3 @@
-
 'use client'
 import axios from "axios"
 import Link from "next/link"
@@ -27,11 +26,12 @@ export default  function dashboard(){
     
         
     
-        if(!user){
-          router.push("/")
-        }
-    
-else{
+        useEffect(() => {
+          if (!user) {
+            router.push("/");
+          }
+        }, [user, router]);
+
 
 
     return(
@@ -59,4 +59,3 @@ else{
         
     )
   }
-}

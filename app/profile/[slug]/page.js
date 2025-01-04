@@ -1,5 +1,4 @@
 'use client';
-
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
@@ -83,10 +82,12 @@ export default function ProfileSlug({ params }) {
     }
   };
 
-  if(!user){
-    router.push('/')
-  }
-  else{
+  useEffect(() => {
+    if (!user) {
+      router.push("/");
+    }
+  }, [user, router]);
+ 
 
   return (
     
@@ -184,5 +185,4 @@ export default function ProfileSlug({ params }) {
       </div>
     </div>
   );
-}
 }
