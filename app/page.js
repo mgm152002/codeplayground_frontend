@@ -40,12 +40,12 @@ export default function Home() {
     },
   ];
 
-  useEffect(() => {
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if (isMobile) {
-      setShowWarning(true);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  //   if (isMobile) {
+  //     setShowWarning(true);
+  //   }
+  // }, []);
 
   const handleCloseWarning = () => {
     // Do nothing when the warning is closed
@@ -79,13 +79,14 @@ export default function Home() {
       <div className="hero bg-base-200 py-20">
   <div className="hero-content text-center">
     <div className="max-w-md">
-      <h1 className="text-5xl font-bold">CodePlayGround</h1>
-      <p className="py-6">
+      <h1 className="text-5xl font-bold mr-3">CodePlayGround</h1>
+      <p className="py-5">
       Your go-to platform to write, run, and compile code across multiple programming languages with ease. Experiment, test, and bring your ideas to life in a seamless and intuitive environment!”
       </p>
       <button className="btn btn-primary" onClick={()=>router.push('/api/auth/login')}>Get Started</button>
     </div>
   </div>
+
   
 </div>
 <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 p-6 bg-base-200 ">
@@ -106,7 +107,7 @@ export default function Home() {
 
 
     <div className="bg-base-200 py-12">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-5">
         <div className="text-center mb-10">
           <h2 className="text-4xl font-bold">Why Developers Love CodePlayGround</h2>
           <p className="mt-4 text-lg text-gray-600">
