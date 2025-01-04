@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
 import axios from 'axios';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { useRouter } from 'next/navigation';
@@ -66,9 +66,12 @@ export default function ProfileClient() {
   };
 
   
-  if (!user) {
-    router.push('/');
-  } else {
+ useEffect(() => {
+           if (!user) {
+             router.push("/");
+           }
+         }, [user, router]);
+ 
     return (
       <div>
         
@@ -174,5 +177,5 @@ export default function ProfileClient() {
         </div>
       </div>
     );
-  }
+  
 }
