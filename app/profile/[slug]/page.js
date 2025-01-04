@@ -2,7 +2,6 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useUser } from '@auth0/nextjs-auth0/client';
 import { FaStar } from "react-icons/fa";
 import 'ace-builds/src-noconflict/ace';
 import 'ace-builds/src-noconflict/mode-c_cpp';
