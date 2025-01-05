@@ -8,6 +8,7 @@ import 'ace-builds/src-noconflict/mode-c_cpp';
 import 'ace-builds/src-noconflict/theme-monokai';
 import { FaStar } from "react-icons/fa";
 import 'ace-builds/src-noconflict/ace';
+import Link from 'next/link';
 
 
 export default function ProfileClient() {
@@ -73,7 +74,11 @@ export default function ProfileClient() {
          }, [user, router]);
  
     return (
-      <div>
+      <div >
+        <div className='bg-base-100 mt-10 px-10'>
+        <Link href="/dashboard" className="bg-base-100"><button className='btn btn-primary'>Back</button></Link>
+
+        </div>
         
         <div className="bg-base-100 text-center pt-10">
           {/* Add filename input */}
