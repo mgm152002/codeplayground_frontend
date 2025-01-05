@@ -27,7 +27,7 @@ export default function ProfileClient() {
   const handleCompile = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.post('http://localhost:8000/compile', {
+      const { data } = await axios.post('https://code-playground.duckdns.org/compile', {
         code: code,
         lang: lang,
         fname: filename,
@@ -53,7 +53,7 @@ export default function ProfileClient() {
 
     try {
         setLoading1(true)
-      const response = await axios.post('http://localhost:8000/codeAi', data.toString(), {
+      const response = await axios.post('https://code-playground.duckdns.org/codeAi', data.toString(), {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }

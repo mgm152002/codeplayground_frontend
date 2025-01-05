@@ -13,7 +13,7 @@ export default  function dashboard(){
     const [data1,setData1] = useState([])
      
         async function callFiles(){
-            const {data} = await axios.get(`http://localhost:8000/getCode/?email=${user?.name}`) 
+            const {data} = await axios.get(`https://code-playground.duckdns.org/getCode/?email=${user?.name}`) 
         setData1(data.files)
         }
         

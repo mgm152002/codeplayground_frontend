@@ -27,7 +27,7 @@ export default function ProfileSlug({ params }) {
 
   const getCodeValue = async () => {
     try {
-      const { data } = await axios.get(`http://localhost:8000/getCodeValue/?email=mgm@mail.com&fname=${slug}`);
+      const { data } = await axios.get(`https://code-playground.duckdns.org/getCodeValue/?email=mgm@mail.com&fname=${slug}`);
       setCode(data.content);
     } catch (error) {
       console.error('Error fetching code:', error);
@@ -43,7 +43,7 @@ export default function ProfileSlug({ params }) {
   const handleCompile = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.post('http://localhost:8000/compile', {
+      const { data } = await axios.post('https://code-playground.duckdns.org/compile', {
         code: code,
         lang: lang,
         fname: filename,
@@ -69,7 +69,7 @@ export default function ProfileSlug({ params }) {
 
     try {
         setLoading1(true)
-      const response = await axios.post('http://localhost:8000/codeAi', data.toString(), {
+      const response = await axios.post('https://code-playground.duckdns.org/codeAi', data.toString(), {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
