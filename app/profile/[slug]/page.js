@@ -27,7 +27,7 @@ export default function ProfileSlug({ params }) {
 
   const getCodeValue = async () => {
     try {
-      const { data } = await axios.get(`https://code-playground.duckdns.org/getCodeValue/?email=mgm@mail.com&fname=${slug}`);
+      const { data } = await axios.get(`https://code-playground.duckdns.org/getCodeValue/?email=${user.name}&fname=${slug}`);
       setCode(data.content);
     } catch (error) {
       console.error('Error fetching code:', error);
