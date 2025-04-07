@@ -156,19 +156,19 @@ export default function ProfileSlug({ params }) {
           style={{ width: '60%', maxWidth: 'lg', margin: 'auto', border: '1px solid #ccc', borderRadius: '8px' }}
         />
         <div className="mt-4 flex flex-col items-center">
-          <select
-            className="select select-bordered select-primary max-w-xs mb-2"
-            value={lang}
-            onChange={(e) => setLang(e.target.value)}
-          >
-            <option value="c" onClick={() => setLang('c')}>C</option>
-            <option value="js" onClick={() => setLang('js')}>JavaScript</option>
-            <option value="py" onClick={() => setLang('py')}>Python</option>
-            <option disabled >Java(coming soon)</option>
-            <option vlaue="c++" onClick={()=>setLang('cpp')}>c++</option>
-            <option vlaue="go" onClick={()=>setLang('go')}>GO</option>
-            <option vlaue="rust" onClick={()=>setLang('rs')}>Rust</option>
-          </select>
+        <select
+  className="select select-bordered select-primary max-w-xs mb-2"
+  value={lang}
+  onChange={(e) => setLang(e.target.value)}
+>
+  <option value="c">C</option>
+  <option value="js">JavaScript</option>
+  <option value="py">Python</option>
+  <option disabled>Java (coming soon)</option>
+  <option value="cpp">C++</option>
+  <option value="go">Go</option>
+  <option value="rs">Rust</option>
+</select>
           <button className="btn btn-primary" onClick={handleCompile}>
             {loading ? <span className="loading loading-dots loading-lg"></span> : 'Compile'}
           </button>
