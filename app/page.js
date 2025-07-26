@@ -1,5 +1,5 @@
 'use client'
-import { useUser } from '@clerk/nextjs';
+import { useUser, SignOutButton } from '@clerk/nextjs';
 import { useRouter } from "next/navigation";
 import { FaCode, FaRobot, FaUsers, FaBolt, FaEdit } from 'react-icons/fa';
 import { FaStar, FaCheckCircle, FaHeart } from 'react-icons/fa';
@@ -43,7 +43,16 @@ export default function Home() {
       <nav className="flex items-center justify-between p-4 border-b border-border">
         <a className="text-2xl font-bold text-primary" href="/">CodePlayGround</a>
         <div>
-          <a className='inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2' href='/sign-in'>Login/Signup</a>
+          {isLoaded && isSignedIn ? (
+            <>
+              <button className='inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 mr-2' onClick={() => router.push('/dashboard')}>Go to Dashboard</button>
+              <SignOutButton>
+                <button className='inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2'>Sign Out</button>
+              </SignOutButton>
+            </>
+          ) : (
+            <a className='inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2' href='/sign-in'>Login/Signup</a>
+          )}
         </div>
       </nav>
       <header className="py-20 text-center bg-card">
