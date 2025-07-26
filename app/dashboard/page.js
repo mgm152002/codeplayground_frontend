@@ -3,17 +3,18 @@ import axios from "axios"
 import Link from "next/link"
 import { useState ,useEffect } from "react"
 import { FaPlus } from "react-icons/fa"
-import { useUser } from '@auth0/nextjs-auth0/client';
+import { useUser } from '@clerk/nextjs';
 
 import { useRouter } from 'next/navigation';
 export default  function dashboard(){
   const router = useRouter();
-  const { user, error, isLoading } = useUser();
+  const { user, isLoaded, isSignedIn } = useUser();
 
     const [data1,setData1] = useState([])
      
         async function callFiles(){
-            const {data} = await axios.get(`https://code-playground.duckdns.org/getCode/?email=${user?.name}`) 
+            if (!isLoaded || !isSignedIn) return; // Ensure user is loaded and signed in
+            const {data} = await axios.get(`https://code-playground.duckdns.org/getCode/?email=${user?.primaryEmailAddress?.emailAddress}`) 
         setData1(data.files)
         }
         
@@ -27,10 +28,10 @@ export default  function dashboard(){
         
     
         useEffect(() => {
-          if (!user && process.env.SKIP_AUTH !== 'true') {
+          if (isLoaded && !isSignedIn && process.env.SKIP_AUTH !== 'true') {
             router.push("/");
           }
-        }, [user, router]);
+        }, [isLoaded, isSignedIn, router]);
 
 
 

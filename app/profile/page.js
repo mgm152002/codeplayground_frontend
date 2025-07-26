@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useUser } from '@auth0/nextjs-auth0/client';
+import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import Editor from '@monaco-editor/react';
 import { FaStar, FaPlay, FaRobot, FaSave } from "react-icons/fa";
@@ -9,7 +9,7 @@ import Link from 'next/link';
 import toast from 'react-hot-toast';
 
 export default function ProfileClient() {
-  const { user, error, isLoading } = useUser();
+  const { user, isLoaded, isSignedIn } = useUser();
   const router = useRouter();
 
   const [code, setCode] = useState('');
@@ -31,7 +31,7 @@ export default function ProfileClient() {
           code: code,
           lang: lang,
           fname: filename,
-          email: user.name,
+          email: user?.primaryEmailAddress?.emailAddress,
           input: programInput
         }, {
           headers: {
@@ -93,10 +93,10 @@ export default function ProfileClient() {
   };
 
   useEffect(() => {
-    if (!user && process.env.SKIP_AUTH !== 'true') {
+    if (isLoaded && !isSignedIn && process.env.SKIP_AUTH !== 'true') {
       router.push("/");
     }
-  }, [user, router]);
+  }, [isLoaded, isSignedIn, router]);
 
   const getLanguageMode = (lang) => {
     switch (lang) {

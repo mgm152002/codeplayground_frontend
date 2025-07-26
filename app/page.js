@@ -1,12 +1,12 @@
 'use client'
-import { useUser } from '@auth0/nextjs-auth0/client';
+import { useUser } from '@clerk/nextjs';
 import { useRouter } from "next/navigation";
 import { FaCode, FaRobot, FaUsers, FaBolt, FaEdit } from 'react-icons/fa';
 import { FaStar, FaCheckCircle, FaHeart } from 'react-icons/fa';
 
 export default function Home() {
   const router = useRouter();
-  const { user } = useUser(); 
+  const { user, isLoaded, isSignedIn } = useUser(); 
   
   const features = [
     {
@@ -36,8 +36,8 @@ export default function Home() {
     },
   ];
 
-  if (user && process.env.SKIP_AUTH !== 'true') {
-    router.push("/profile")
+  if (isLoaded && isSignedIn && process.env.NEXT_PUBLIC_SKIP_AUTH !== 'true') {
+    router.push("/dashboard")
   }
 
   return (
@@ -45,7 +45,7 @@ export default function Home() {
       <nav className="flex items-center justify-between p-4 border-b border-border">
         <a className="text-2xl font-bold text-primary" href="/">CodePlayGround</a>
         <div>
-          <a className='inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2' href='/api/auth/login'>Login/Signup</a>
+          <a className='inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2' href='/sign-in'>Login/Signup</a>
         </div>
       </nav>
       <header className="py-20 text-center bg-card">
@@ -54,7 +54,7 @@ export default function Home() {
           <p className="text-lg text-muted-foreground mb-8">
             Your go-to platform to write, run, and compile code across multiple programming languages with ease. Experiment, test, and bring your ideas to life in a seamless and intuitive environment!
           </p>
-          <button className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2" onClick={()=>router.push('/api/auth/login')}>Get Started</button>
+          <button className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2" onClick={()=>router.push('/sign-up')}>Get Started</button>
         </div>
       </header>
       <section className="py-16 bg-background">

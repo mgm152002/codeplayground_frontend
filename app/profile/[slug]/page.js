@@ -3,14 +3,14 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { FaStar, FaPlay, FaRobot, FaSave } from "react-icons/fa";
 import Editor from '@monaco-editor/react';
-import { useUser } from '@auth0/nextjs-auth0/client';
+import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 
 export default function ProfileSlug({ params }) {
   const router = useRouter();
-  const { user, error, isLoading } = useUser();
+  const { user, isLoaded, isSignedIn } = useUser();
   const [code, setCode] = useState('');
   const [lang, setLang] = useState('c');
   const [loading, setLoading] = useState(false);
@@ -24,7 +24,7 @@ export default function ProfileSlug({ params }) {
 
   const getCodeValue = async () => {
     try {
-      const { data } = await axios.get(`https://code-playground.duckdns.org/getCodeValue/?email=${user.name}&fname=${slug}`);
+      const { data } = await axios.get(`https://code-playground.duckdns.org/getCodeValue/?email=${user?.primaryEmailAddress?.emailAddress}&fname=${slug}`);
       setCode(data.content);
     } catch (error) {
       console.error('Error fetching code:', error);
@@ -46,7 +46,7 @@ export default function ProfileSlug({ params }) {
           code: code,
           lang: lang,
           fname: filename,
-          email: user.name,
+          email: user?.primaryEmailAddress?.emailAddress,
           input: programInput
         }, {
           headers: {
@@ -108,10 +108,10 @@ export default function ProfileSlug({ params }) {
   };
 
   useEffect(() => {
-    if (!user && process.env.SKIP_AUTH !== 'true') {
+    if (isLoaded && !isSignedIn && process.env.SKIP_AUTH !== 'true') {
       router.push("/");
     }
-  }, [user, router]);
+  }, [isLoaded, isSignedIn, router]);
 
   const getLanguageMode = (lang) => {
     switch (lang) {
