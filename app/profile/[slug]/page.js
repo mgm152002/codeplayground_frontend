@@ -18,7 +18,7 @@ export default function ProfileSlug({ params }) {
   const [chatHistory, setChatHistory] = useState([]);
   const [result, setResult] = useState('');
   const [prompt, setPrompt] = useState('');
-  const [programInput, setProgramInput] = useState('');
+  
   const { slug } = params;
   const [showModal, setShowModal] = useState(false);
 
@@ -46,8 +46,7 @@ export default function ProfileSlug({ params }) {
           code: code,
           lang: lang,
           fname: filename,
-          email: user?.primaryEmailAddress?.emailAddress,
-          input: programInput
+          email: user?.primaryEmailAddress?.emailAddress
         }, {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -189,15 +188,6 @@ export default function ProfileSlug({ params }) {
           />
         </div>
         <div className="w-1/2 flex flex-col">
-          <div className="p-4 border-b border-border">
-            <h2 className="text-lg font-semibold">Input</h2>
-          </div>
-          <textarea
-            className="flex-1 p-4 overflow-auto bg-muted text-muted-foreground border-b border-border resize-none focus:outline-none"
-            placeholder="Enter program input here..."
-            value={programInput}
-            onChange={(e) => setProgramInput(e.target.value)}
-          ></textarea>
           <div className="p-4 border-b border-border">
             <h2 className="text-lg font-semibold">Output</h2>
           </div>
