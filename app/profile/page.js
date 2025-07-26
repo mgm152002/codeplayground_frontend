@@ -1,15 +1,12 @@
 'use client';
-import React, { useState ,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { useRouter } from 'next/navigation';
-import AceEditor from 'react-ace';
-import 'ace-builds/src-noconflict/mode-c_cpp';
-import 'ace-builds/src-noconflict/theme-monokai';
-import { FaStar } from "react-icons/fa";
-import 'ace-builds/src-noconflict/ace';
+import Editor from '@monaco-editor/react';
+import { FaStar, FaPlay, FaRobot, FaSave } from "react-icons/fa";
 import Link from 'next/link';
-
+import toast from 'react-hot-toast';
 
 export default function ProfileClient() {
   const { user, error, isLoading } = useUser();
@@ -21,169 +18,234 @@ export default function ProfileClient() {
   const [result, setResult] = useState('');
   const [prompt, setPrompt] = useState('');
   const [loading1, setLoading1] = useState(false);
-  const [filename, setFilename] = useState(''); // Add state for filename
-  const [result1, setResult1] = useState('');
+  const [filename, setFilename] = useState('');
+  const [programInput, setProgramInput] = useState('');
+  const [chatHistory, setChatHistory] = useState([]);
+  const [showModal, setShowModal] = useState(false);
 
   const handleCompile = async () => {
-    try {
-      setLoading(true);
-      const { data } = await axios.post('https://code-playground.duckdns.org/compile', {
-        code: code,
-        lang: lang,
-        fname: filename,
-        email: user.name
-      }, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-      });
-      setResult(data.out); // Assuming the compilation result is in the 'out' field of the response
-    } catch (error) {
-      console.error('Error compiling code:', error);
-      setResult(error.response.data.details);
-    } finally {
-      setLoading(false);
-    }
+    const compilePromise = new Promise(async (resolve, reject) => {
+      try {
+        setLoading(true);
+        const { data } = await axios.post('https://code-playground.duckdns.org/compile', {
+          code: code,
+          lang: lang,
+          fname: filename,
+          email: user.name,
+          input: programInput
+        }, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+        });
+        setResult(data.out);
+        resolve('Code compiled successfully!');
+      } catch (error) {
+        console.error('Error compiling code:', error);
+        setResult(error.response.data.details);
+        reject('Failed to compile code.');
+      } finally {
+        setLoading(false);
+      }
+    });
+    toast.promise(compilePromise, {
+      loading: 'Compiling code...',
+      success: 'Compilation successful!',
+      error: 'Compilation failed.',
+    });
   };
 
   const handleSendPrompt = async () => {
     if (!prompt.trim()) return;
-    const data = new URLSearchParams();
-    data.append('prompt', `${prompt}\nCode:\n${code}`);
 
-    try {
-        setLoading1(true)
-      const response = await axios.post('https://code-playground.duckdns.org/codeAi', data.toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      });
-      setLoading1(false)
-      setResult1(response.data); // Display the response from the API in the result field
-      
-    } catch (error) {
-      console.error('Error sending prompt:', error);
+    const userMessage = { sender: 'user', text: prompt };
+    setChatHistory((prev) => [...prev, userMessage]);
+    setPrompt('');
+
+    const aiPromise = new Promise(async (resolve, reject) => {
+      const data = new URLSearchParams();
+      data.append('prompt', `${prompt}\nCode:\n${code}`);
+
+      try {
+        setLoading1(true);
+        const response = await axios.post('https://code-playground.duckdns.org/codeAi', data.toString(), {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        });
+        const aiMessage = { sender: 'ai', text: response.data };
+        setChatHistory((prev) => [...prev, aiMessage]);
+        resolve('AI response received!');
+      } catch (error) {
+        console.error('Error sending prompt:', error);
+        const errorMessage = { sender: 'ai', text: 'Error: Unable to get response from CodeAI.' };
+        setChatHistory((prev) => [...prev, errorMessage]);
+        reject('Failed to get AI response.');
+      } finally {
+        setLoading1(false);
+      }
+    });
+    toast.promise(aiPromise, {
+      loading: 'Getting AI response...',
+      success: 'AI response received!',
+      error: 'Failed to get AI response.',
+    });
+  };
+
+  useEffect(() => {
+    if (!user && process.env.SKIP_AUTH !== 'true') {
+      router.push("/");
+    }
+  }, [user, router]);
+
+  const getLanguageMode = (lang) => {
+    switch (lang) {
+      case 'c':
+      case 'cpp':
+        return 'cpp';
+      case 'js':
+        return 'javascript';
+      case 'py':
+        return 'python';
+      case 'go':
+        return 'go';
+      case 'rs':
+        return 'rust';
+      default:
+        return 'plaintext';
     }
   };
 
-  
- useEffect(() => {
-           if (!user) {
-             router.push("/");
-           }
-         }, [user, router]);
- 
-    return (
-      <div >
-        <div className='bg-base-100 mt-10 px-10'>
-        <Link href="/dashboard" className="bg-base-100"><button className='btn btn-primary'>Back</button></Link>
-
-        </div>
-        
-        <div className="bg-base-100 text-center pt-10">
-          {/* Add filename input */}
-          <div className="mb-4">
-            <input
-              type="text"
-              className="input input-bordered input-primary w-1/2"
-              placeholder="Enter filename"
-              value={filename}
-              onChange={(e) => setFilename(e.target.value)}
-            />
-          </div>
-          <div className="items-center text-center mt-5 mb-5">
-                  <button className="btn btn-primary" onClick={() => document.getElementById('my_modal_5').showModal()}>
-                    <FaStar /> CodeAI
-                  </button>
-                  <dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
-                    <div className="modal-box">
-                      <h3 className="font-bold text-lg">Chat with codeAI</h3>
-                      <div className="flex flex-col">
-                          <div className="items-center mt-3 mb-3">
-                          <input
-                          type="text"
-                          id="prompt-input"
-                          placeholder="Type your prompt here"
-                          className="input input-bordered input-primary w-full max-w-xs  mb-4 "
-                          value={prompt}
-                          
-                          onChange={(e) => setPrompt(e.target.value)}
-                        />
-          
-                          </div>
-                        
-                        <div className="flex justify-between">
-                          <button
-                            id="send-btn"
-                            className="btn btn-primary w-1/3"
-                            onClick={handleSendPrompt}
-                          >
-                            {loading1 ? <span className="loading loading-dots loading-lg"></span> : 'Send'}
-                          </button>
-                          <button
-                            className="btn w-1/3"
-                            onClick={() => document.getElementById('my_modal_5').close()}
-                          >
-                            Close
-                          </button>
-                        </div>
-                      </div>
-                      {result1 && (
-                        <div className="mt-4">
-                          <label className="block text-lg font-semibold mb-2">Response:</label>
-                          <textarea
-                            readOnly
-                            value={result1}
-                            className="textarea textarea-bordered textarea-primary w-full h-48 max-w-lg"
-                            placeholder="The response from CodeAI will appear here..."
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </dialog>
-                </div>
-          
-          <AceEditor
-            mode="c_cpp"
-            theme="monokai"
-            value={code}
-            onChange={setCode}
-            name="code-editor"
-            editorProps={{ $blockScrolling: true }}
-            style={{ width: '60%', margin: 'auto', border: '1px solid #ccc', borderRadius: '8px' }}
+  return (
+    <div className="flex flex-col h-screen bg-background text-foreground">
+      <nav className="flex items-center justify-between p-4 border-b border-border">
+        <Link href="/dashboard">
+          <button className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+            Back to Dashboard
+          </button>
+        </Link>
+        <div className="flex items-center space-x-4">
+          <input
+            type="text"
+            className="flex h-10 w-48 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            placeholder="Enter filename"
+            value={filename}
+            onChange={(e) => setFilename(e.target.value)}
           />
-          <div className="mt-4 flex flex-col items-center">
           <select
-  className="select select-bordered select-primary max-w-xs mb-2"
-  value={lang}
-  onChange={(e) => setLang(e.target.value)}
->
-  <option value="c">C</option>
-  <option value="js">JavaScript</option>
-  <option value="py">Python</option>
-  <option disabled>Java (coming soon)</option>
-  <option value="cpp">C++</option>
-  <option value="go">Go</option>
-  <option value="rs">Rust</option>
-</select>
-            <button className="btn btn-primary" onClick={handleCompile}>
-              {loading ? <span className="loading loading-dots loading-lg"></span> : 'Compile'}
-            </button>
+            className="flex h-10 w-32 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            value={lang}
+            onChange={(e) => setLang(e.target.value)}
+          >
+            <option value="c">C</option>
+            <option value="js">JavaScript</option>
+            <option value="py">Python</option>
+            <option value="cpp">C++</option>
+            <option value="go">Go</option>
+            <option value="rs">Rust</option>
+          </select>
+          <button
+            className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2"
+            onClick={() => setShowModal(true)}
+          >
+            <FaRobot className="mr-2" /> CodeAI
+          </button>
+          <button
+            className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+            onClick={handleCompile}
+            disabled={loading}
+          >
+            {loading ? 'Running...' : <><FaPlay className="mr-2" /> Run Code</>}
+          </button>
+        </div>
+      </nav>
+
+      <div className="flex flex-1 overflow-hidden">
+        <div className="w-1/2 flex flex-col border-r border-border">
+          <div className="p-4 border-b border-border">
+            <h2 className="text-lg font-semibold">Code Editor</h2>
           </div>
-          <div className="text-red-600 mt-2">Please write some code. Remember to include driver code.</div>
-          {result && (
-            <AceEditor
-              mode="text"
-              theme="monokai"
-              value={result}
-              name="result-editor"
-              readOnly
-              editorProps={{ $blockScrolling: Infinity }}
-              style={{ width: '50%', margin: 'auto', border: '1px solid #ccc', borderRadius: '8px', marginTop: '10px' }}
-            />
-          )}
+          <Editor
+            height="100%"
+            language={getLanguageMode(lang)}
+            theme="vs-dark"
+            value={code}
+            onChange={(value) => setCode(value)}
+            options={{
+              minimap: { enabled: false },
+              fontSize: 14,
+              scrollBeyondLastLine: false,
+              automaticLayout: true,
+            }}
+          />
+        </div>
+        <div className="w-1/2 flex flex-col">
+          <div className="p-4 border-b border-border">
+            <h2 className="text-lg font-semibold">Input</h2>
+          </div>
+          <textarea
+            className="flex-1 p-4 overflow-auto bg-muted text-muted-foreground border-b border-border resize-none focus:outline-none"
+            placeholder="Enter program input here..."
+            value={programInput}
+            onChange={(e) => setProgramInput(e.target.value)}
+          ></textarea>
+          <div className="p-4 border-b border-border">
+            <h2 className="text-lg font-semibold">Output</h2>
+          </div>
+          <div className="flex-1 p-4 overflow-auto bg-muted text-muted-foreground">
+            <pre>{result}</pre>
+          </div>
         </div>
       </div>
-    );
-  
+
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+          <div className="relative z-50 w-full max-w-lg rounded-lg border bg-background p-6 shadow-lg">
+            <h3 className="font-bold text-lg mb-4">Chat with CodeAI</h3>
+            <div className="flex flex-col h-96">
+              <div className="flex-1 overflow-y-auto p-4 border border-input rounded-md mb-4">
+                {chatHistory.map((msg, index) => (
+                  <div
+                    key={index}
+                    className={`mb-2 ${msg.sender === 'user' ? 'text-right' : 'text-left'}`}
+                  >
+                    <span
+                      className={`inline-block p-2 rounded-lg ${msg.sender === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}
+                    >
+                      {msg.text}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <input
+                type="text"
+                placeholder="Type your prompt here"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mb-4"
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') handleSendPrompt();
+                }}
+              />
+              <div className="flex justify-between">
+                <button
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 w-1/3"
+                  onClick={handleSendPrompt}
+                  disabled={loading1}
+                >
+                  {loading1 ? 'Sending...' : 'Send'}
+                </button>
+                <button
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 w-1/3"
+                  onClick={() => setShowModal(false)}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
