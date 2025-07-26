@@ -23,7 +23,8 @@
     "@monaco-editor/react": "^4.6.0",
     "monaco-editor": "^0.47.0",
     "react-hot-toast": "^2.4.1",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "@auth0/nextjs-auth0": "^3.5.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.0.1",
