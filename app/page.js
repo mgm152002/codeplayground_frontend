@@ -36,9 +36,7 @@ export default function Home() {
     },
   ];
 
-  if (isLoaded && isSignedIn && process.env.NEXT_PUBLIC_SKIP_AUTH !== 'true') {
-    router.push("/dashboard")
-  }
+  
 
   return (
     <div className='min-h-screen bg-background text-foreground'>
