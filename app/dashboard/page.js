@@ -36,7 +36,10 @@ export default  function dashboard(){
 
 
     return(
-        <div className="min-h-screen bg-background text-foreground p-6">
+        <div className="min-h-screen bg-background text-foreground">
+            <nav className="flex items-center justify-between p-4 border-b border-border">
+                <a className="text-2xl font-bold text-primary" href="/">CodePlayGround</a>
+            </nav>
             <h1 className="text-center text-3xl font-bold mt-5 mb-8">Dashboard</h1>
             <div className="mb-6">
                 <Link href="/profile">
